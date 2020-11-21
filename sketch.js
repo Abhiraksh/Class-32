@@ -6,12 +6,14 @@ const Constraint = Matter.Constraint;
 var engine, world;
 var box1, pig1,pig3;
 var backgroundImg,platform;
-var bird, slingshot;
+var bird, slingshot,bg= "sprites/bg.png",bg_image;
+var score = 0;
 
 var gameState = "onSling";
 
 function preload() {
-    backgroundImg = loadImage("sprites/bg.png");
+    //backgroundImg = loadImage("sprites/bg.png");
+    nightZone();
 }
 
 function setup(){
@@ -19,7 +21,7 @@ function setup(){
     engine = Engine.create();
     world = engine.world;
 
-
+   
     ground = new Ground(600,height,1200,20);
     platform = new Ground(150, 305, 300, 170);
 
@@ -45,18 +47,28 @@ function setup(){
 }
 
 function draw(){
-    background(backgroundImg);
+    if(bg_image){
+     background(bg_image);
+    }
     Engine.update(engine);
     //strokeWeight(4);
+
+    fill("red");
+    textSize(20);
+    text("Score: "+score,900,100);
+
+
     box1.display();
     box2.display();
     ground.display();
     pig1.display();
+    pig1.scoring();
     log1.display();
 
     box3.display();
     box4.display();
     pig3.display();
+    pig3.scoring();
     log3.display();
 
     box5.display();
@@ -70,9 +82,9 @@ function draw(){
 }
 
 function mouseDragged(){
-    if (gameState!=="launched"){
+   // if (gameState!=="launched"){
         Matter.Body.setPosition(bird.body, {x: mouseX , y: mouseY});
-    }
+  //  }
 }
 
 
@@ -85,4 +97,21 @@ function keyPressed(){
     if(keyCode === 32){
        // slingshot.attach(bird.body);
     }
+}
+
+ async function nightZone(){
+    var NZ = await fetch("http://worldtimeapi.org/api/timezone/America/Mexico_City");
+    var NZjson = await NZ.json();
+    var dt = NZjson.datetime;
+  //  console.log(dt);
+    var time = dt.slice(11,13);
+    console.log(time);
+    if(time>06 && time<19){
+        bg = "sprites/bg.png";
+    }
+    else{
+        bg = "sprites/bg2.jpg";
+    }
+    bg_image = loadImage(bg);
+    console.log(bg_image);
 }
